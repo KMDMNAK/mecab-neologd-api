@@ -1,12 +1,11 @@
 version: "3"
 services: 
     mecab-api:
-        build: .
-        volumes:
-            - ./src:/go/work
+        container_name: mecabapi
+        build:
+            context: .
+            dockerfile: Dockerfile
         ports:
             - "8080:8080"
-        environment:
-            - CGO_CFLAGS="-I`mecab-config --inc-dir`"
-            - CGO_LDFLAGS="`mecab-config --libs`"
-            - NEOLOGD_PATH="mecab-config --dicdir /mecab-ipadic-neologd"
+        working_dir:  /go/work
+        command: "go run main.go"

@@ -1,0 +1,9 @@
+version: "3"
+
+services: 
+    mecab-api:
+        container_name: mecabapi-dev
+        volumes:
+            - ./src:/go/work
+        command: /bin/bash
+        tty: true
