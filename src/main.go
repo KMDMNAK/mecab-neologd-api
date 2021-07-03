@@ -1,22 +1,9 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"project.com/mecabapi/api"
 )
 
-func handleOwakati(c *gin.Context) {
-	// word := c.Param("word")
-	// fmt.Printf("%d\n", word)
-	// println(word)
-	// key := parser.GetNode(word)
-	// // key := word
-	// c.JSON(200, gin.H{"key": key})
-	
-}
-
 func main() {
-	// r := gin.Default()
-	// r.GET("/owakati/:word", handleOwakati)
-	// // mecab.getNode()
-	// r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	api.Bootstrap(8080)
 }

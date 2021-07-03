@@ -2,9 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -13,11 +15,12 @@ type Recorder struct {
 	b []byte
 }
 
-func testRequest(u string) *Recorder {
+func testRequest(method string, u string, body io.Reader) *Recorder {
 	e := createEngine()
 	w := httptest.NewRecorder()
 	//c, _ := gin.CreateTestContext(w)
-	req, _ := http.NewRequest("GET", u, nil)
+	req, _ := http.NewRequest(method, u, body)
+	req.Header.Set("Content-Type", "application/json")
 	e.ServeHTTP(w, req)
 	b := w.Body.Bytes()
 	return &Recorder{
@@ -33,7 +36,7 @@ type ExtractProperResponse struct {
 func TestExtractProperSuccess(t *testing.T) {
 	te := "習近平国家主席「説教は決して受け入れない」アメリカをけん制　中国共産党創設100周年"
 	text := url.QueryEscape(te)
-	r := testRequest("/proper/extract/" + text)
+	r := testRequest("GET", "/proper/extract/"+text, nil)
 	body := ExtractProperResponse{}
 	err := json.Unmarshal(r.b, &body)
 	if err != nil {
@@ -48,7 +51,7 @@ func TestExtractProperSuccess(t *testing.T) {
 func TestExtractProperFailed(t *testing.T) {
 	te := ""
 	text := url.QueryEscape(te)
-	r := testRequest("/proper/extract/" + text)
+	r := testRequest("GET", "/proper/extract/"+text, nil)
 	if r.w.Result().StatusCode != 404 {
 		t.Fail()
 	}
@@ -61,10 +64,27 @@ type CountProperResponse struct {
 func TestCountProper(t *testing.T) {
 	te := "習近平国家主席「説教は決して受け入れない」アメリカをけん制　中国共産党創設100周年"
 	text := url.QueryEscape(te)
-	r := testRequest("/proper/count/" + text)
+	r := testRequest("GET", "/proper/count/"+text, nil)
 
 	body := CountProperResponse{}
 	err := json.Unmarshal(r.b, &body)
+	if err != nil {
+		t.Log(err.Error())
+		t.Fail()
+	}
+	c, ok := body.ProperNounsCount["習近平"]
+	if !ok || c < 1 {
+		t.Fail()
+	}
+}
+
+func TestCountProperPost(t *testing.T) {
+	te := map[string]string{"text": "習近平国家主席「説教は決して受け入れない」アメリカをけん制　中国共産党創設100周年"}
+	// text := url.QueryEscape(te)
+	bytes, err := json.Marshal(te)
+	r := testRequest("POST", "/proper/count", strings.NewReader(string(bytes)))
+	body := CountProperResponse{}
+	err = json.Unmarshal(r.b, &body)
 	if err != nil {
 		t.Log(err.Error())
 		t.Fail()

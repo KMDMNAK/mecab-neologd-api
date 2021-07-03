@@ -1,6 +1,8 @@
 package api
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -18,18 +20,39 @@ func CreateProperHandler() *properHandler {
 	return &ph
 }
 
-func (e *properHandler) init(c *gin.Context) {
-	t := c.Param("text")
-	text, err := url.QueryUnescape(t)
+type ProperRequestBody struct {
+	Text string `form:"user" json:"text"`
+}
+
+func (e *properHandler) init(c *gin.Context) error {
+	var text string
+	var err error
+	if c.Request.Method == "GET" {
+		t := c.Param("text")
+		text, err = url.QueryUnescape(t)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, nil)
+			return err
+		}
+	} else if c.Request.Method == "POST" {
+		var params ProperRequestBody
+		err = c.BindJSON(&params)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, nil)
+			return errors.New("不正な文字列です。")
+		}
+		text = params.Text
+	}
+
 	m, err := parser.CreateMecabTagger()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
-		return
+		return err
 	}
 	rn, err := m.GetNode(text)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "不正なテキストです。")
-		return
+		return err
 	}
 	ns := parser.CreateNodeByRecursive(rn)
 	pe := extract.ProperExtractor{}
@@ -41,10 +64,15 @@ func (e *properHandler) init(c *gin.Context) {
 		pns = append(pns, n)
 	}
 	e.pns = pns
+	return nil
 }
 
 func (e *properHandler) extractProper(c *gin.Context) {
-	e.init(c)
+	err := e.init(c)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	var ss = []string{}
 	for _, p := range e.pns {
 		ss = append(ss, p.Surface)
@@ -53,7 +81,11 @@ func (e *properHandler) extractProper(c *gin.Context) {
 }
 
 func (e *properHandler) countProper(c *gin.Context) {
-	e.init(c)
+	err := e.init(c)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	var cmap = map[string]int{}
 	for _, p := range e.pns {
 		if _, ok := cmap[p.Surface]; ok {
