@@ -1,4 +1,5 @@
 {
+    "python.pythonPath": "scripts\\.venv\\Scripts\\python.exe",
     "go.lintTool":"golangci-lint",
     "go.lintFlags": [
         "--config=${workspaceFolder}/.golangci.yaml",
