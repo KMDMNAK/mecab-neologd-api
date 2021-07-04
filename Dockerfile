@@ -26,18 +26,6 @@ RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git &&\
     cd mecab-ipadic-neologd && \
     yes yes | ./bin/install-mecab-ipadic-neologd -n
 
-
-ENV GOPATH=/go
-RUN go get -v\
-    golang.org/x/tools/gopls@v0.7.0\
-    honnef.co/go/tools@v0.2.0\
-    golang.org/x/lint@v0.0.0-20210508222113-6edffad5e616\
-    github.com/mgechev/revive@v1.0.8\
-    github.com/uudashr/gopkgs@v1.3.2\
-    github.com/ramya-rao-a/go-outline@v0.0.0-20210608161538-9736a4bde949\
-    github.com/go-delve/delve@v1.6.1\
-    github.com/golangci/golangci-lint@v1.41.1
-
 COPY src /go/work
 ENV CGO_LDFLAGS="-L/usr/lib/x86_64-linux-gnu -lmecab -lstdc++"
 ENV CGO_CFLAGS="-I/usr/include"

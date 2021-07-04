@@ -3,6 +3,9 @@ version: "3"
 services: 
     mecab-api:
         container_name: mecabapi-dev
+        build: 
+            dockerfile: Dockerfile.dev
+            context: .
         volumes:
             - ./src:/go/work
         command: /bin/bash
