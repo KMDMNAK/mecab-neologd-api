@@ -33,3 +33,5 @@ ENV NEOLOGD_PATH="/usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd"
 COPY src /go/work
 WORKDIR /go/work
 RUN go get
+
+CMD [ "go", "run", "main.go" ]

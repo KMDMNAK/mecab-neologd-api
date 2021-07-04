@@ -6,6 +6,6 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - "8080:8080"
-        working_dir:  /go/work
-        command: "go run main.go"
+            - "3000:3000"
+        environment: 
+            PORT: 3000
