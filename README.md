@@ -1,5 +1,5 @@
 # Mecab-API
-This repository serve mecab api using Golang and Neologd Dictionary.
+This repository serve mecab api written in Golang and using Neologd Dictionary.
 
 # Routes
 
