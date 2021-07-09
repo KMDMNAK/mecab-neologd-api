@@ -1,13 +1,13 @@
 package main
 
 import (
-	"strconv"
 	"os"
+	"strconv"
 
 	"project.com/mecabapi/api"
 )
 
-func GetPort() int{
+func GetPort() int {
 	port := os.Getenv("PORT")
 	i, err := strconv.Atoi(port)
 	if err != nil {

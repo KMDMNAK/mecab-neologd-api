@@ -80,6 +80,11 @@ func (e *properHandler) extractProper(c *gin.Context) {
 	c.SecureJSON(http.StatusOK, map[string][]string{"proper_nouns": ss})
 }
 
+type ProperItem struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
+
 func (e *properHandler) countProper(c *gin.Context) {
 	err := e.init(c)
 	if err != nil {
@@ -94,5 +99,13 @@ func (e *properHandler) countProper(c *gin.Context) {
 			cmap[p.Surface] = 1
 		}
 	}
-	c.SecureJSON(http.StatusOK, map[string]interface{}{"proper_nouns_count": cmap})
+	items := []ProperItem{}
+	for surface, count := range cmap {
+		pi := ProperItem{
+			Name:  surface,
+			Count: count,
+		}
+		items = append(items, pi)
+	}
+	c.SecureJSON(http.StatusOK, map[string]interface{}{"proper_nouns_count": items})
 }
