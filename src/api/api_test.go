@@ -58,7 +58,7 @@ func TestExtractProperFailed(t *testing.T) {
 }
 
 type CountProperResponse struct {
-	ProperNounsCount map[int]ProperItem `json:"proper_nouns_count"`
+	ProperNounsCount []ProperItem `json:"proper_nouns_count"`
 }
 
 func TestCountProper(t *testing.T) {
