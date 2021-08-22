@@ -22,8 +22,8 @@ RUN apt-get update &&\
 
 WORKDIR /custom
 
-RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git &&\
-    cd mecab-ipadic-neologd && \
+RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git
+RUN cd mecab-ipadic-neologd && \
     yes yes | ./bin/install-mecab-ipadic-neologd -n
 
 COPY src /go/work
@@ -33,5 +33,7 @@ ENV NEOLOGD_PATH="/usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd"
 COPY src /go/work
 WORKDIR /go/work
 RUN go get
+RUN go build
 
-CMD [ "go", "run", "main.go" ]
+# TODO Use supervisord
+CMD ["./mecabapi"]
